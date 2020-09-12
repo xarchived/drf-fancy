@@ -6,9 +6,7 @@ class _BaseSerializer(ModelSerializer):
     class Meta:
         model: models.Model
 
-
-class FancyCreateMixin(_BaseSerializer):
-    def create(self, validated_data):
+    def get_relations(self, validated_data):
         many_to_many = dict()
         for field_name, field_value in self.initial_data.items():
             field = self.fields.fields[field_name]
@@ -30,6 +28,13 @@ class FancyCreateMixin(_BaseSerializer):
                     many_to_many[_field_name] = field_value
                 validated_data.pop(_field_name)
 
+        return many_to_many
+
+
+class FancyCreateMixin(_BaseSerializer):
+    def create(self, validated_data):
+        many_to_many = self.get_relations(validated_data)
+
         instance = self.Meta.model.objects.create(**validated_data)
         for field_name, field_value in many_to_many.items():
             attr = getattr(instance, field_name)
@@ -41,4 +46,15 @@ class FancyCreateMixin(_BaseSerializer):
 
 class FancyUpdateMixin(_BaseSerializer):
     def update(self, instance, validated_data):
-        raise NotImplemented()
+        many_to_many = self.get_relations(validated_data)
+
+        for field_name, field_value in many_to_many.items():
+            attr = getattr(instance, field_name)
+            for pk in field_value:
+                attr.add(pk)
+
+        for field_name, field_value in self.initial_data.items():
+            setattr(instance, field_name, field_value)
+
+        instance.save()
+        return instance
