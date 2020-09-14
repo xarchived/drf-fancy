@@ -6,11 +6,9 @@ class _BaseSerializer(ModelSerializer):
     class Meta:
         model: models.Model
 
-    @property
-    def grouped_fields(self) -> tuple:
+    def _extract_relations(self) -> tuple:
         many_to_many = dict()
         one_to_many = dict()
-        not_relation = dict()
 
         for field_name, field_value in self.initial_data.items():
             field = self.fields.fields[field_name]
@@ -29,43 +27,60 @@ class _BaseSerializer(ModelSerializer):
                     many_to_many[_field_name] = field_value
             elif field_name.endswith('_id'):
                 pass
-            else:
-                not_relation[field_name] = field_value
 
-        return many_to_many, one_to_many, not_relation
+        for field_name in many_to_many:
+            self.validated_data.pop(field_name)
 
-    @staticmethod
-    def save_many_to_many_fields(instance, data, clear=False):
-        for field_name, field_value in data.items():
-            attr = getattr(instance, field_name)
+        self.many_to_many_data = many_to_many
+        self.one_to_many_data = one_to_many
 
-            if clear:
+        return many_to_many, one_to_many
+
+    def _save_none_relational_fields(self):
+        self.instance = self.Meta.model.objects.create(**self.validated_data)
+
+        return self.instance
+
+    def _update_none_relational_fields(self):
+        for field_name, field_value in self.validated_data.items():
+            setattr(self.instance, field_name, field_value)
+        self.instance.save()
+
+        return self.instance
+
+    def _save_or_update_many_to_many_fields(self, update=True) -> None:
+        for field_name, field_value in self.many_to_many_data.items():
+            attr = getattr(self.instance, field_name)
+
+            if update:
                 attr.clear()
 
             for pk in field_value:
                 attr.add(pk)
 
-    def save_one_to_many_fields(self):
+    def _save_many_to_many_fields(self) -> None:
+        self._save_or_update_many_to_many_fields()
+
+    def _update_many_to_many_fields(self) -> None:
+        self._save_or_update_many_to_many_fields(update=True)
+
+    def _save_one_to_many_fields(self):
         raise NotImplemented()
 
 
 class FancyCreateMixin(_BaseSerializer):
     def create(self, validated_data):
-        many_to_many, one_to_many, normal = self.grouped_fields
+        self._extract_relations()
+        self._save_none_relational_fields()
+        self._save_many_to_many_fields()
 
-        instance = self.Meta.model.objects.create(**normal)
-        self.save_many_to_many_fields(instance, many_to_many)
-
-        return instance
+        return self.instance
 
 
 class FancyUpdateMixin(_BaseSerializer):
     def update(self, instance, validated_data):
-        many_to_many, one_to_many, normal = self.grouped_fields
+        self._extract_relations()
+        self._update_many_to_many_fields()
+        self._update_none_relational_fields()
 
-        self.save_many_to_many_fields(instance, many_to_many, clear=True)
-        for field_name, field_value in normal.items():
-            setattr(instance, field_name, field_value)
-        instance.save()
-
-        return instance
+        return self.instance
