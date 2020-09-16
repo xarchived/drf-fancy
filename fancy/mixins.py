@@ -21,9 +21,12 @@ class _BaseSerializer(ModelSerializer):
                 _field_name = field_name[:field_name.rfind('_ids')]
                 many_to_many[_field_name] += field_value
             elif isinstance(field, ModelSerializer):
-                obj = field.Meta.model.objects.create(**field_value)
-                self.validated_data[field_name + '_id'] = obj.pk
-                self.validated_data.pop(field_name)
+                if hasattr(field, 'Meta'):
+                    obj = field.Meta.model.objects.create(**field_value)
+                    self.validated_data[field_name + '_id'] = obj.pk
+                    self.validated_data.pop(field_name)
+                else:
+                    raise ValueError('Meta not found')
 
         self.many_to_many_data = many_to_many
         for field_name in many_to_many:
