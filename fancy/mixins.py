@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 from django.db import models
+from rest_framework.exceptions import APIException
 from rest_framework.serializers import ModelSerializer, ListSerializer
 
 
@@ -26,7 +27,7 @@ class _BaseSerializer(ModelSerializer):
                     self.validated_data[field_name + '_id'] = obj.pk
                     self.validated_data.pop(field_name)
                 else:
-                    raise ValueError('Meta not found')
+                    raise APIException('Meta not found')
 
         self.many_to_many_data = many_to_many
         for field_name in many_to_many:
