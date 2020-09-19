@@ -26,7 +26,7 @@ setup(
         'Issue tracker': f'https://github.com/{owner}/{name}/issues',
     },
     packages=find_packages(),
-    install_requires=[],
+    install_requires=['django', 'djangorestframework'],
     python_requires='>=3.6',
     zip_safe=False,
     classifiers=[
