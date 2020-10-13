@@ -14,6 +14,8 @@ class FancySerializer(ModelSerializer):
 
         for field_name, field_value in self.initial_data.items():
             field = self.fields.fields[field_name]
+            if field.read_only:
+                raise APIException(f'Read only field ({field_name})')
             if isinstance(field, ListSerializer):
                 for record in field_value:
                     obj = field.child.Meta.model.objects.create(**record)
