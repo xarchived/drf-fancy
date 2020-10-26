@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import viewsets
 
 
@@ -11,13 +12,17 @@ class FancyViewSet(viewsets.ModelViewSet):
             key = param[2:]
 
             # Django "filter" dose not support numerical conversion for JSON fields. We convert all params ourself
-            try:
-                value = self.request.query_params[param]
-                if '.' in value:
-                    params[key] = float(value)
-                else:
-                    params[key] = int(value)
-            except ValueError:
-                params[key] = self.request.query_params[param]
+            type_casting = settings.FANCY.get('TYPE_CASTING')
+            value = self.request.query_params[param]
+            if type_casting:
+                try:
+                    if '.' in value:
+                        params[key] = float(value)
+                    else:
+                        params[key] = int(value)
+                except ValueError:
+                    params[key] = value
+            else:
+                params[key] = value
 
         return self.serializer_class.Meta.model.objects.filter(**params)
