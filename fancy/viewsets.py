@@ -1,9 +1,11 @@
-from django.conf import settings
+from getter import get_setting
 from rest_framework import viewsets
 
 
 class FancyViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
+        type_casting = get_setting('FANCY', 'TYPE_CASTING')
+
         params = {}
         for param in self.request.query_params:
             # To avoid confusion we start our filter parameters with "__"
@@ -12,7 +14,6 @@ class FancyViewSet(viewsets.ModelViewSet):
             key = param[2:]
 
             # Django "filter" dose not support numerical conversion for JSON fields. We convert all params ourself
-            type_casting = settings.FANCY.get('TYPE_CASTING')
             value = self.request.query_params[param]
             if type_casting:
                 try:
