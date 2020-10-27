@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import Any
 
 from django.db import models
 from rest_framework.exceptions import APIException
@@ -56,7 +57,7 @@ class FancySerializer(ModelSerializer):
             setattr(self.instance, field_name, field_value)
         self.instance.save()
 
-    def _save_or_update_many_to_many_fields(self, update=True) -> None:
+    def _save_or_update_many_to_many_fields(self, update: bool = True) -> None:
         # We have to call "_prepare_relational_fields" before calling this method, otherwise an "AttributeError" error
         # will raise because "many_to_many_data" define by "_prepare_relational_fields"
         for field_name, field_value in self.many_to_many_data.items():
@@ -77,14 +78,14 @@ class FancySerializer(ModelSerializer):
         # A proxy method
         self._save_or_update_many_to_many_fields(update=True)
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> Any:
         self._prepare_relational_fields()
         self._save_none_relational_fields()
         self._save_many_to_many_fields()
 
         return self.instance
 
-    def update(self, instance, validated_data):
+    def update(self, instance: object, validated_data: dict) -> Any:
         self._prepare_relational_fields()
         self._update_many_to_many_fields()
         self._update_none_relational_fields()
