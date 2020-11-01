@@ -3,6 +3,13 @@ from rest_framework import viewsets
 
 
 class FancyViewSet(viewsets.ModelViewSet):
+    # noinspection PyProtectedMember
+    @property
+    def credential(self):
+        if hasattr(self.request._request, 'credential'):
+            return self.request._request.credential
+        return None
+
     def get_queryset(self):
         type_casting = get_setting('FANCY', 'TYPE_CASTING')
 
