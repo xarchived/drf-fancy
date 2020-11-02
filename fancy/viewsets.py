@@ -1,4 +1,4 @@
-from getter import get_setting
+from getter import get_setting, get_model
 from rest_framework import viewsets
 
 
@@ -34,3 +34,22 @@ class FancyViewSet(viewsets.ModelViewSet):
                 params[key] = value
 
         return self.serializer_class.Meta.model.objects.filter(**params)
+
+
+class FancySelfViewSet(FancyViewSet):
+    self_fields: list
+    self_models: dict
+
+    def get_queryset(self):
+        filters = {field: self.credential.id for field in self.self_fields}
+        return self.queryset.filter(**filters)
+
+    def create(self, request, *args, **kwargs):
+        response = super(FancySelfViewSet, self).create(request, *args, **kwargs)
+        for model_name, fields in self.self_models.items():
+            model = get_model(model_name)
+            args = {fields[0]: response.data['id'], fields[1]: self.credential.id}
+            assign = model(**args)
+            assign.save()
+
+        return response
