@@ -41,10 +41,16 @@ class FancySelfViewSet(FancyViewSet):
     self_models: dict
 
     def get_queryset(self):
+        if not self.credential:
+            raise KeyError('No credential found')
+
         filters = {field: self.credential.id for field in self.self_fields}
         return self.queryset.filter(**filters)
 
     def create(self, request, *args, **kwargs):
+        if not self.credential:
+            raise KeyError('No credential found')
+
         response = super(FancySelfViewSet, self).create(request, *args, **kwargs)
         for model_name, fields in self.self_models.items():
             model = get_model(model_name)
