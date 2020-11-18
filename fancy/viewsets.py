@@ -37,34 +37,30 @@ class FancyViewSet(viewsets.ModelViewSet):
 
 
 class FancySelfViewSet(FancyViewSet):
-    self_fields: list
-    self_models: dict
+    self_field: str
+    self_model: tuple
 
     def get_queryset(self):
         if not self.credential:
             raise KeyError('No credential found')
 
-        filters = {field: self.credential.id for field in self.self_fields}
+        filters = {field: self.credential.id for field in self.self_field}
         return self.queryset.filter(**filters)
 
     def create(self, request, *args, **kwargs):
         if not self.credential:
             raise KeyError('No credential found')
 
-        if hasattr(self, 'self_fields'):
-            for field in self.self_fields:
-                if '__' in field:
-                    continue
-
-                request.data[field] = self.credential.id
+        if hasattr(self, 'self_field') and '__' not in self.self_field:
+            request.data[self.self_field] = self.credential.id
 
         response = super(FancySelfViewSet, self).create(request, *args, **kwargs)
 
-        if hasattr(self, 'self_models'):
-            for model_name, fields in self.self_models.items():
-                model = get_model(model_name)
-                args = {fields[0]: response.data['id'], fields[1]: self.credential.id}
-                instant = model(**args)
-                instant.save()
+        if hasattr(self, 'self_model'):
+            model_name, left, right = self.self_model
+            model_class = get_model(model_name)
+            args = {left: response.data['id'], right: self.credential.id}
+            instant = model_class(**args)
+            instant.save()
 
         return response
