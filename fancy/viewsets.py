@@ -51,11 +51,20 @@ class FancySelfViewSet(FancyViewSet):
         if not self.credential:
             raise KeyError('No credential found')
 
+        if hasattr(self, 'self_fields'):
+            for field in self.self_fields:
+                if '__' in field:
+                    continue
+
+                request.data[field] = self.credential.id
+
         response = super(FancySelfViewSet, self).create(request, *args, **kwargs)
-        for model_name, fields in self.self_models.items():
-            model = get_model(model_name)
-            args = {fields[0]: response.data['id'], fields[1]: self.credential.id}
-            assign = model(**args)
-            assign.save()
+
+        if hasattr(self, 'self_models'):
+            for model_name, fields in self.self_models.items():
+                model = get_model(model_name)
+                args = {fields[0]: response.data['id'], fields[1]: self.credential.id}
+                instant = model(**args)
+                instant.save()
 
         return response
