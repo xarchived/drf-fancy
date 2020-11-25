@@ -1,3 +1,4 @@
+from ast import literal_eval
 from getter import get_setting, get_model
 from rest_framework import viewsets
 
@@ -22,7 +23,12 @@ class FancyViewSet(viewsets.ModelViewSet):
 
             # Django "filter" dose not support numerical conversion for JSON fields. We convert all params ourself
             value = self.request.query_params[param]
-            if type_casting:
+            if param.endswith('__in'):  # When we use "in" we have to convert our value into a list
+                value = literal_eval(value)
+                if not isinstance(value, tuple):
+                    value = (value,)
+                params[key] = value
+            elif type_casting:  # Django dose not convert JSON numeric value automatically
                 try:
                     if '.' in value:
                         params[key] = float(value)
@@ -30,7 +36,7 @@ class FancyViewSet(viewsets.ModelViewSet):
                         params[key] = int(value)
                 except ValueError:
                     params[key] = value
-            else:
+            else:  # We trust Django and do not check for correct values
                 params[key] = value
 
         return self.serializer_class.Meta.model.objects.filter(**params)
