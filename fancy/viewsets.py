@@ -1,9 +1,19 @@
 from ast import literal_eval
+
 from getter import get_setting, get_model
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 
 
 class FancyViewSet(viewsets.ModelViewSet):
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+
+    def __init__(self, **kwargs):
+        if hasattr(self.serializer_class, 'Meta') and hasattr(self.serializer_class.Meta, 'fields'):
+            self.ordering_fields = self.serializer_class.Meta.fields
+            self.search_fields = self.serializer_class.Meta.fields
+
+        super().__init__(**kwargs)
+
     # noinspection PyProtectedMember
     @property
     def credential(self):
