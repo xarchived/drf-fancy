@@ -31,7 +31,6 @@ class FancyViewSet(viewsets.ModelViewSet):
                 continue
             key = param[2:]
 
-            # Django "filter" dose not support numerical conversion for JSON fields. We convert all params ourself
             value = self.request.query_params[param]
             if param.endswith('__in'):  # When we use "in" we have to convert our value into a list
                 value = literal_eval(value)
