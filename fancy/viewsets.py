@@ -9,8 +9,17 @@ class FancyViewSet(viewsets.ModelViewSet):
 
     def __init__(self, **kwargs):
         if hasattr(self.serializer_class, 'Meta') and hasattr(self.serializer_class.Meta, 'fields'):
-            self.ordering_fields = self.serializer_class.Meta.fields
-            self.search_fields = self.serializer_class.Meta.fields
+            fields = []
+            for field in self.serializer_class.Meta.fields:
+                if not hasattr(self.serializer_class.fields, field):
+                    continue
+
+                attr = getattr(self.serializer_class.fields, field)
+                if isinstance(attr, str) or isinstance(attr, int):
+                    fields.append(field)
+
+            self.ordering_fields = fields
+            self.search_fields = fields
 
         super().__init__(**kwargs)
 
