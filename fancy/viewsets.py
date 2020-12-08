@@ -1,16 +1,17 @@
 from ast import literal_eval
 
-from getter import get_setting, get_model
 from rest_framework import viewsets, filters, fields
 
+from getter import get_setting, get_model
 
+
+# noinspection PyProtectedMember
 class FancyViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
 
     def __init__(self, **kwargs):
         if hasattr(self.serializer_class, 'Meta') and hasattr(self.serializer_class.Meta, 'fields'):
             temp = []
-            # noinspection PyProtectedMember
             for field, field_type in self.serializer_class._declared_fields.items():
                 if field not in self.serializer_class.Meta.fields:
                     continue
@@ -26,7 +27,6 @@ class FancyViewSet(viewsets.ModelViewSet):
 
         super().__init__(**kwargs)
 
-    # noinspection PyProtectedMember
     @property
     def credential(self):
         if hasattr(self.request._request, 'credential'):
