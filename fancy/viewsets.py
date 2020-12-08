@@ -1,7 +1,7 @@
 from ast import literal_eval
 
 from getter import get_setting, get_model
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, fields
 
 
 class FancyViewSet(viewsets.ModelViewSet):
@@ -9,17 +9,20 @@ class FancyViewSet(viewsets.ModelViewSet):
 
     def __init__(self, **kwargs):
         if hasattr(self.serializer_class, 'Meta') and hasattr(self.serializer_class.Meta, 'fields'):
-            fields = []
-            for field in self.serializer_class.Meta.fields:
-                if not hasattr(self.serializer_class.fields, field):
+            temp = []
+            # noinspection PyProtectedMember
+            for field, field_type in self.serializer_class._declared_fields.items():
+                if field not in self.serializer_class.Meta.fields:
                     continue
 
-                attr = getattr(self.serializer_class.fields, field)
-                if isinstance(attr, str) or isinstance(attr, int):
-                    fields.append(field)
+                if field_type.write_only:
+                    continue
 
-            self.ordering_fields = fields
-            self.search_fields = fields
+                if isinstance(field_type, fields.CharField) or isinstance(field_type, fields.IntegerField):
+                    temp.append(field)
+
+            self.ordering_fields = temp
+            self.search_fields = temp
 
         super().__init__(**kwargs)
 
@@ -32,30 +35,29 @@ class FancyViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         type_casting = get_setting('FANCY', 'TYPE_CASTING')
+        reserved_params = get_setting('FANCY', 'RESERVED_PARAMS')
 
         params = {}
         for param in self.request.query_params:
-            # To avoid confusion we start our filter parameters with "__"
-            if not param.startswith('__'):
+            if param in reserved_params:
                 continue
-            key = param[2:]
 
             value = self.request.query_params[param]
             if param.endswith('__in'):  # When we use "in" we have to convert our value into a list
                 value = literal_eval(value)
                 if not isinstance(value, tuple):
                     value = (value,)
-                params[key] = value
+                params[param] = value
             elif type_casting:  # Django dose not convert JSON numeric value automatically
                 try:
                     if '.' in value:
-                        params[key] = float(value)
+                        params[param] = float(value)
                     else:
-                        params[key] = int(value)
+                        params[param] = int(value)
                 except ValueError:
-                    params[key] = value
+                    params[param] = value
             else:  # We trust Django and do not check for correct values
-                params[key] = value
+                params[param] = value
 
         return self.serializer_class.Meta.model.objects.filter(**params)
 
