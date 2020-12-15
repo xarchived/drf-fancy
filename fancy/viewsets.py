@@ -70,7 +70,7 @@ class FancySelfViewSet(FancyViewSet):
         if not self.credential:
             raise KeyError('No credential found')
 
-        return self.queryset.filter(**{self.self_field: self.credential.id})
+        return super(FancySelfViewSet, self).get_queryset().filter(**{self.self_field: self.credential.id})
 
     def create(self, request, *args, **kwargs):
         if not self.credential:
