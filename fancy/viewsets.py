@@ -48,6 +48,8 @@ class FancyViewSet(viewsets.ModelViewSet):
                 if not isinstance(value, tuple):
                     value = (value,)
                 params[param] = value
+            elif value == 'NULL':
+                params[param] = None
             elif type_casting:  # Django dose not convert JSON numeric value automatically
                 try:
                     if '.' in value:
