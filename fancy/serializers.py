@@ -68,7 +68,8 @@ class FancySerializer(ModelSerializer):
                 attr.clear()
 
             for pk in field_value:
-                attr.add(pk)
+                obj = attr.model.objects.get(id=pk)
+                attr.add(obj)
 
     def _save_many_to_many_fields(self) -> None:
         # A proxy method
