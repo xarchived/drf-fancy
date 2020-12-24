@@ -3,8 +3,8 @@ from django.utils import timezone
 
 
 class FancyModel(models.Model):
-    inserted_at = models.DateTimeField(auto_now_add=True, null=True)
-    deleted_at = models.DateTimeField(null=True)
+    inserted_at = models.DateTimeField(auto_now_add=True, null=True, db_index=True)
+    deleted_at = models.DateTimeField(null=True, db_index=True)
 
     class Meta:
         abstract = True
