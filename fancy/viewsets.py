@@ -19,7 +19,9 @@ class FancyViewSet(viewsets.ModelViewSet):
                 if field_type.write_only:
                     continue
 
-                if isinstance(field_type, fields.CharField) or isinstance(field_type, fields.IntegerField):
+                if isinstance(field_type, fields.CharField) or \
+                        isinstance(field_type, fields.IntegerField) or \
+                        isinstance(field_type, fields.DateTimeField):
                     temp.append(field)
 
             self.ordering_fields = temp
