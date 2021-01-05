@@ -1,3 +1,4 @@
+from rest_framework.exceptions import APIException
 from rest_framework.fields import JSONField, IntegerField
 
 
@@ -12,7 +13,7 @@ class RestrictedIntegerField(IntegerField):
 class FancyJSONField(JSONField):
     def __init__(self, *args, **kwargs):
         if 'serializer' not in kwargs:
-            raise ValueError('Serializer is required')
+            raise APIException('Serializer is required')
 
         self.serializer = kwargs['serializer']
         del kwargs['serializer']

@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import Any
 
 from django.db import models
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.serializers import ModelSerializer, ListSerializer
 
 
@@ -19,7 +19,7 @@ class FancySerializer(ModelSerializer):
 
             # Insertion on read only field will cause security issues
             if field.read_only:
-                raise APIException(f'Read only field ({field_name})')
+                raise ValidationError(f'Read only field ({field_name})')
 
             # Detect relation fields and append them to the list
             if isinstance(field, ListSerializer):  # It's a many to many field with new records

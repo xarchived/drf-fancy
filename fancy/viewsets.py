@@ -1,6 +1,7 @@
 from ast import literal_eval
 
 from rest_framework import viewsets, filters, fields
+from rest_framework.exceptions import NotAuthenticated
 
 from getter import get_setting, get_model
 
@@ -76,13 +77,13 @@ class FancySelfViewSet(FancyViewSet):
 
     def get_queryset(self):
         if not self.credential:
-            raise KeyError('No credential found')
+            raise NotAuthenticated('No credential found')
 
         return super(FancySelfViewSet, self).get_queryset().filter(**{self.self_field: self.credential.id})
 
     def create(self, request, *args, **kwargs):
         if not self.credential:
-            raise KeyError('No credential found')
+            raise NotAuthenticated('No credential found')
 
         if hasattr(self, 'self_field') and '__' not in self.self_field:
             request.data[self.self_field] = self.credential.id
