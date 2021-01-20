@@ -3,9 +3,10 @@ from rest_framework.fields import JSONField, IntegerField, Field
 
 
 class SelfSerializerField(Field):
-    def __init__(self, serializer, self_field, **kwargs):
+    def __init__(self, serializer, self_field, many=True, **kwargs):
         self.serializer = serializer
         self.self_field = self_field
+        self.many = many
 
         kwargs['source'] = '*'
         kwargs['read_only'] = True
@@ -13,9 +14,9 @@ class SelfSerializerField(Field):
 
     def to_representation(self, value):
         if self.context['view'].credential:
-            queryset = self.serializer.Meta.model.objects.all().filter(**{
+            queryset = self.serializer.Meta.model.objects.filter(**{
                 self.self_field: self.context['view'].credential.id})
-            serializer = self.serializer(instance=queryset, many=True, context=self.context)
+            serializer = self.serializer(instance=queryset, many=self.many, context=self.context)
 
             return serializer.data
 
