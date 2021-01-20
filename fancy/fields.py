@@ -1,5 +1,28 @@
 from rest_framework.exceptions import APIException
-from rest_framework.fields import JSONField, IntegerField
+from rest_framework.fields import JSONField, IntegerField, Field
+
+
+class SelfSerializerField(Field):
+    def __init__(self, serializer, self_field, **kwargs):
+        self.serializer = serializer
+        self.self_field = self_field
+
+        kwargs['source'] = '*'
+        kwargs['read_only'] = True
+        super().__init__(**kwargs)
+
+    def to_representation(self, value):
+        if self.context['view'].credential:
+            queryset = self.serializer.Meta.model.objects.all().filter(**{
+                self.self_field: self.context['view'].credential.id})
+            serializer = self.serializer(instance=queryset, many=True, context=self.context)
+
+            return serializer.data
+
+        return []
+
+    def to_internal_value(self, data):
+        raise NotImplementedError()
 
 
 class RestrictedIntegerField(IntegerField):
