@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import APIException
 from rest_framework.fields import JSONField, IntegerField, Field
 
@@ -24,6 +25,31 @@ class SelfSerializerField(Field):
             return serializer.data
 
         return []
+
+    def to_internal_value(self, data):
+        raise NotImplementedError()
+
+
+class LoginRequiredSerializerField(Field):
+    def __init__(self, serializer, many=False, **kwargs):
+        self.serializer = serializer
+        self.many = many
+
+        kwargs['source'] = '*'
+        kwargs['read_only'] = True
+        super().__init__(**kwargs)
+
+    def to_representation(self, value):
+        if not self.context['view'].credential:
+            return None
+
+        try:
+            queryset = self.serializer.Meta.model.objects.get(id=value.seller_id)
+        except ObjectDoesNotExist:
+            return None
+
+        serializer = self.serializer(instance=queryset, context=self.context)
+        return serializer.data
 
     def to_internal_value(self, data):
         raise NotImplementedError()
