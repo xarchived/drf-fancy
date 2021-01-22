@@ -1,4 +1,3 @@
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import APIException
 from rest_framework.fields import JSONField, IntegerField, Field
 
@@ -48,12 +47,11 @@ class LoginRequiredSerializerField(Field):
         if not self.context['view'].credential:
             return None
 
-        try:
-            queryset = self.serializer.Meta.model.objects.get(id=value.seller_id)
-        except ObjectDoesNotExist:
-            return None
+        queryset = self.serializer.Meta.model.objects.filter(id=value.seller_id)
+        if not self.many:
+            queryset = queryset.first()
 
-        serializer = self.serializer(instance=queryset, context=self.context)
+        serializer = self.serializer(instance=queryset, many=self.many, context=self.context)
         return serializer.data
 
     def to_internal_value(self, data):
