@@ -4,7 +4,7 @@ from rest_framework.fields import JSONField, IntegerField, Field
 
 
 class SelfSerializerField(Field):
-    def __init__(self, serializer, self_field, relation_field, many=True, **kwargs):
+    def __init__(self, serializer, self_field, relation_field, many=False, **kwargs):
         self.serializer = serializer
         self.self_field = self_field
         self.relation_field = relation_field
