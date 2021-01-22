@@ -20,11 +20,17 @@ class SelfSerializerField(Field):
                 self.relation_field: value.id,
                 self.self_field: self.context['view'].credential.id
             })
+
+            if not self.many:
+                queryset = queryset.first()
+
             serializer = self.serializer(instance=queryset, many=self.many, context=self.context)
 
             return serializer.data
 
-        return []
+        if self.many:
+            return []
+        return None
 
     def to_internal_value(self, data):
         raise NotImplementedError()
