@@ -18,4 +18,4 @@ class FancyInspector(InlineSerializerInspector):
 
 
 class FancyAutoSchema(SwaggerAutoSchema):
-    field_inspectors = [FancyInspector] + swagger_settings.DEFAULT_FIELD_INSPECTORS
+    field_inspectors = [*swagger_settings.DEFAULT_FIELD_INSPECTORS, FancyInspector]
