@@ -24,7 +24,8 @@ class SelfSerializerField(Field):
 
             serializer = self.serializer(instance=queryset, many=self.many, context=self.context)
 
-            return serializer.data
+            if serializer.data:
+                return serializer.data
 
         if self.many:
             return []
