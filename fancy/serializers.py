@@ -23,6 +23,7 @@ class FancySerializer(ModelSerializer):
 
             # Detect relation fields and append them to the list
             if isinstance(field, ListSerializer):  # It's a many to many field with new records
+                many_to_many[field_name] = []
                 for record in field_value:
                     obj = field.child.Meta.model.objects.create(**record)
                     many_to_many[field_name].append(obj.pk)
