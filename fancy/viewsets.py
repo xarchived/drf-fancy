@@ -68,7 +68,7 @@ class FancyViewSet(viewsets.ModelViewSet):
             else:  # We trust Django and do not check for correct values
                 params[param] = value
 
-        return self.queryset.filter(**params)
+        return self.queryset.filter(**params).distinct()
 
 
 class FancySelfViewSet(FancyViewSet):
