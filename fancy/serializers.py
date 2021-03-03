@@ -87,7 +87,10 @@ class FancySerializer(ModelSerializer):
 
         return self.instance
 
-    def update(self, instance: object, validated_data: dict) -> Any:
+    def update(self, instance: models.Model, validated_data: dict) -> Any:
+        self.instance = instance
+        self.validated_data.update(validated_data)
+
         self._prepare_relational_fields()
         self._update_many_to_many_fields()
         self._update_none_relational_fields()
