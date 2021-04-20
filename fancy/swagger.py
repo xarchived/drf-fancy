@@ -16,12 +16,14 @@ class FancyInspector(FieldInspector):
                 method=self.method,
                 components=self.components,
                 request=self.request,
-                field_inspectors=self.field_inspectors)
+                field_inspectors=self.field_inspectors,
+            )
             return inspector.field_to_swagger_object(
                 field=field,
                 swagger_object_type=swagger_object_type,
                 use_references=use_references,
-                **kwargs)
+                **kwargs,
+            )
 
         return NotHandled
 

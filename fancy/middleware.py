@@ -31,6 +31,9 @@ class ErrorHandlerMiddleware:
         status = 500
         message = 'Unknown error occurred'
 
-        return JsonResponse({
-            'detail': message
-        }, status=status)
+        return JsonResponse(
+            data={
+                'detail': message,
+            },
+            status=status,
+        )
