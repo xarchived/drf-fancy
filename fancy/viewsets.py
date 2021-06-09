@@ -77,7 +77,7 @@ class FancySelfViewSet(FancyViewSet):
 
     def get_queryset(self):
         if not self.credential:
-            raise NotAuthenticated('No credential found')
+            return super(FancySelfViewSet, self).get_queryset().none()
 
         return super(FancySelfViewSet, self).get_queryset().filter(**{self.self_field: self.credential.id})
 
