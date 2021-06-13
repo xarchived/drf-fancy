@@ -7,7 +7,7 @@ from rest_framework.fields import DateTimeField, IntegerField
 from rest_framework.serializers import ModelSerializer, ListSerializer
 
 
-class FancySerializer(ModelSerializer):
+class NestedModelSerializer(ModelSerializer):
     class Meta:
         model: models.Model
 
