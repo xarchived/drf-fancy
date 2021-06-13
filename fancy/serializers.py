@@ -3,6 +3,7 @@ from typing import Any
 
 from django.db import models
 from rest_framework.exceptions import APIException, ValidationError
+from rest_framework.fields import DateTimeField, IntegerField
 from rest_framework.serializers import ModelSerializer, ListSerializer
 
 
@@ -96,3 +97,29 @@ class FancySerializer(ModelSerializer):
         self._update_none_relational_fields()
 
         return self.instance
+
+
+class SafeDeleteSerializer(ModelSerializer):
+    deleted_at = DateTimeField(read_only=True)
+
+    class Meta:
+        fields = ['deleted_at']
+
+
+class LogFieldsSerializer(ModelSerializer):
+    inserted_at = DateTimeField(read_only=True)
+    updated_at = DateTimeField(read_only=True)
+
+    class Meta:
+        fields = ['inserted_at', 'updated_at']
+
+
+class CommonFieldsSerializer(SafeDeleteSerializer, LogFieldsSerializer):
+    id = IntegerField(read_only=True)
+
+    class Meta:
+        fields = [
+            'id',
+            *SafeDeleteSerializer.Meta.fields,
+            *LogFieldsSerializer.Meta.fields,
+        ]
