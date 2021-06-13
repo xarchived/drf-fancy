@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Any
 
-from django.db import models
+from django.db.models import Model
 from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.fields import DateTimeField, IntegerField
 from rest_framework.serializers import ModelSerializer, ListSerializer
@@ -9,7 +9,7 @@ from rest_framework.serializers import ModelSerializer, ListSerializer
 
 class NestedModelSerializer(ModelSerializer):
     class Meta:
-        model: models.Model
+        model: Model
 
     def _prepare_relational_fields(self) -> None:
         # We only should concern about many to many fields, as Django handles one to many fields by itself
@@ -88,7 +88,7 @@ class NestedModelSerializer(ModelSerializer):
 
         return self.instance
 
-    def update(self, instance: models.Model, validated_data: dict) -> Any:
+    def update(self, instance: Model, validated_data: dict) -> Any:
         self.instance = instance
         self.validated_data.update(validated_data)
 

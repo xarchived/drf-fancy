@@ -1,9 +1,9 @@
-from django.db import models
+from django.db.models import Model, DateTimeField
 from django.utils import timezone
 
 
-class SafeDeleteModel(models.Model):
-    deleted_at = models.DateTimeField(null=True, db_index=True)
+class SafeDeleteModel(Model):
+    deleted_at = DateTimeField(null=True, db_index=True)
 
     class Meta:
         abstract = True
@@ -13,9 +13,9 @@ class SafeDeleteModel(models.Model):
         self.save()
 
 
-class LogFieldsModel(models.Model):
-    inserted_at = models.DateTimeField(auto_now_add=True, db_index=True)
-    updated_at = models.DateTimeField(auto_now=True, db_index=True)
+class LogFieldsModel(Model):
+    inserted_at = DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = DateTimeField(auto_now=True, db_index=True)
 
     class Meta:
         abstract = True

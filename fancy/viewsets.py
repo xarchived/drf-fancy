@@ -1,14 +1,16 @@
 from ast import literal_eval
 
-from rest_framework import viewsets, filters, fields
 from rest_framework.exceptions import NotAuthenticated
+from rest_framework.fields import CharField, IntegerField, DateTimeField
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.viewsets import ModelViewSet
 
 from getter import get_setting, get_model
 
 
 # noinspection PyProtectedMember
-class FancyViewSet(viewsets.ModelViewSet):
-    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+class FancyViewSet(ModelViewSet):
+    filter_backends = [OrderingFilter, SearchFilter]
 
     def __init__(self, **kwargs):
         if hasattr(self.serializer_class, 'Meta') and hasattr(self.serializer_class.Meta, 'fields'):
@@ -21,9 +23,9 @@ class FancyViewSet(viewsets.ModelViewSet):
                     continue
 
                 conditions = (
-                        isinstance(field_type, fields.CharField)
-                        or isinstance(field_type, fields.IntegerField)
-                        or isinstance(field_type, fields.DateTimeField)
+                        isinstance(field_type, CharField)
+                        or isinstance(field_type, IntegerField)
+                        or isinstance(field_type, DateTimeField)
                 )
                 if conditions:
                     temp.append(field)
