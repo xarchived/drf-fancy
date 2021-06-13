@@ -16,6 +16,9 @@ class NestedModelSerializer(ModelSerializer):
         many_to_many = defaultdict(list)
 
         for field_name, field_value in self.initial_data.items():
+            if field_name not in self.fields.fields:
+                raise ValidationError(f'Field not found ({field_name})')
+
             field = self.fields.fields[field_name]
 
             # Insertion on read only field will cause security issues
