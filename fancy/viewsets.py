@@ -5,7 +5,8 @@ from rest_framework.fields import CharField, IntegerField, DateTimeField
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.viewsets import ModelViewSet
 
-from getter import get_setting, get_model
+from fancy.settings import TYPE_CASTING, RESERVED_PARAMS
+from getter import get_model
 
 
 # noinspection PyProtectedMember
@@ -42,8 +43,8 @@ class FancyViewSet(ModelViewSet):
         return None
 
     def get_queryset(self):
-        type_casting = get_setting('FANCY', 'TYPE_CASTING')
-        reserved_params = get_setting('FANCY', 'RESERVED_PARAMS')
+        type_casting = TYPE_CASTING
+        reserved_params = RESERVED_PARAMS
 
         params = {}
         for param in self.request.query_params:

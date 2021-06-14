@@ -1,8 +1,9 @@
 import time
 
-from django.conf import settings
 from django.http import JsonResponse
 from django.utils.cache import add_never_cache_headers
+
+from fancy.settings import DEBUG
 
 
 class ElapsedMiddleware:
@@ -26,7 +27,7 @@ class ErrorHandlerMiddleware:
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def process_exception(self, request, exception):
-        if settings.DEBUG:
+        if DEBUG:
             raise exception
 
         status = 500
