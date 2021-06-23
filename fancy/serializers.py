@@ -103,7 +103,7 @@ class NestedModelSerializer(ModelSerializer):
 
 
 class SafeDeleteSerializer(ModelSerializer):
-    deleted_at = DateTimeField(read_only=True)
+    deleted_at = DateTimeField()
 
     class Meta:
         fields = ['deleted_at']
