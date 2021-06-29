@@ -19,6 +19,9 @@ class SelfSerializerField(Field):
                 self.relation_field: value.id,
                 self.self_field: self.context['view'].credential.id})
 
+            if not queryset.exists():
+                return None
+
             if not self.many:
                 queryset = queryset.first()
 
@@ -27,8 +30,6 @@ class SelfSerializerField(Field):
             if serializer.data:
                 return serializer.data
 
-        if self.many:
-            return []
         return None
 
     def to_internal_value(self, data):
