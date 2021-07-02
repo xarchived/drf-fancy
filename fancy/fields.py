@@ -17,7 +17,7 @@ class SelfSerializerField(Field):
         if self.context['view'].credential:
             queryset = self.serializer.Meta.model.objects.filter(**{
                 self.relation_field: value.id,
-                self.self_field: self.context['view'].credential.id})
+                self.self_field: self.context['view'].credential['id']})
 
             if not queryset.exists():
                 return None

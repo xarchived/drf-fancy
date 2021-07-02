@@ -85,21 +85,21 @@ class FancySelfViewSet(FancyViewSet):
         if not self.credential:
             return super(FancySelfViewSet, self).get_queryset().none()
 
-        return super(FancySelfViewSet, self).get_queryset().filter(**{self.self_field: self.credential.id})
+        return super(FancySelfViewSet, self).get_queryset().filter(**{self.self_field: self.credential['id']})
 
     def create(self, request, *args, **kwargs):
         if not self.credential:
             raise NotAuthenticated('No credential found')
 
         if hasattr(self, 'self_field') and '__' not in self.self_field:
-            request.data[self.self_field] = self.credential.id
+            request.data[self.self_field] = self.credential['id']
 
         response = super(FancySelfViewSet, self).create(request, *args, **kwargs)
 
         if hasattr(self, 'self_model'):
             model_name, left, right = self.self_model
             model_class = get_model(model_name)
-            args = {left: response.data['id'], right: self.credential.id}
+            args = {left: response.data['id'], right: self.credential['id']}
             instant = model_class(**args)
             instant.save()
 
