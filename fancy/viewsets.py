@@ -1,10 +1,10 @@
 from ast import literal_eval
 
-from rest_framework.exceptions import NotAuthenticated
 from rest_framework.fields import CharField, IntegerField, DateTimeField
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.viewsets import ModelViewSet
 
+from fancy.decorators import credential_required
 from fancy.settings import TYPE_CASTING, RESERVED_PARAMS
 from getter import get_model
 
@@ -87,10 +87,8 @@ class FancySelfViewSet(FancyViewSet):
 
         return super(FancySelfViewSet, self).get_queryset().filter(**{self.self_field: self.credential['id']})
 
+    @credential_required
     def create(self, request, *args, **kwargs):
-        if not self.credential:
-            raise NotAuthenticated('No credential found')
-
         if hasattr(self, 'self_field') and '__' not in self.self_field:
             request.data[self.self_field] = self.credential['id']
 
