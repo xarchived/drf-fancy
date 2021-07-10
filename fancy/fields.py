@@ -65,7 +65,7 @@ class RestrictedIntegerField(IntegerField):
         if not isinstance(data, int):
             self.fail('invalid')
 
-        return super(RestrictedIntegerField, self).to_internal_value(data)
+        return super().to_internal_value(data)
 
 
 class FancyJSONField(JSONField):
@@ -82,4 +82,4 @@ class FancyJSONField(JSONField):
         _data = self.serializer(data=data)
         _data.is_valid(raise_exception=True)
 
-        return super(FancyJSONField, self).to_internal_value(data)
+        return super().to_internal_value(data)
