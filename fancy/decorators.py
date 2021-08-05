@@ -11,3 +11,15 @@ def credential_required(func):
         return func(*args, **kwargs)
 
     return wrapper
+
+
+def queryset_credential_handler(func):
+    def wrapper(*args, **kwargs):
+        self = args[0]
+
+        if not self.credential:
+            return self.serializer_class.Meta.model.objects.none()
+
+        return func(*args, **kwargs)
+
+    return wrapper

@@ -4,7 +4,7 @@ from rest_framework.fields import CharField, IntegerField, DateTimeField
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.viewsets import ModelViewSet
 
-from fancy.decorators import credential_required
+from fancy.decorators import credential_required, queryset_credential_handler
 from fancy.settings import TYPE_CASTING, RESERVED_PARAMS
 from getter import get_model
 
@@ -81,10 +81,8 @@ class FancySelfViewSet(FancyViewSet):
     self_field: str
     self_model: tuple
 
+    @queryset_credential_handler
     def get_queryset(self):
-        if not self.credential:
-            return super().get_queryset().none()
-
         return super().get_queryset().filter(**{self.self_field: self.credential['id']})
 
     @credential_required
