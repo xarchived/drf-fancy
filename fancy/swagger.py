@@ -1,7 +1,15 @@
 from drf_yasg.app_settings import swagger_settings
+from drf_yasg.generators import OpenAPISchemaGenerator
 from drf_yasg.inspectors import SwaggerAutoSchema, InlineSerializerInspector, FieldInspector, NotHandled
 
 from fancy.fields import LoginRequiredSerializerField, SelfSerializerField
+
+
+class HttpAndHttpsSchemaGenerator(OpenAPISchemaGenerator):
+    def get_schema(self, request=None, public=False):
+        schema = super().get_schema(request, public)
+        schema.schemes = ['http', 'https']
+        return schema
 
 
 class FancyInspector(FieldInspector):
