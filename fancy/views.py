@@ -17,33 +17,7 @@ class CredentialAPIView(APIView):
         return None
 
 
-# noinspection PyProtectedMember
-class FancyAPIView(GenericAPIView):
-    filter_backends = [OrderingFilter, SearchFilter]
-
-    def __init__(self, **kwargs):
-        if hasattr(self.serializer_class, 'Meta') and hasattr(self.serializer_class.Meta, 'fields'):
-            temp = []
-            for field, field_type in self.serializer_class._declared_fields.items():
-                if field not in self.serializer_class.Meta.fields:
-                    continue
-
-                if field_type.write_only:
-                    continue
-
-                conditions = (
-                        isinstance(field_type, CharField)
-                        or isinstance(field_type, IntegerField)
-                        or isinstance(field_type, DateTimeField)
-                )
-                if conditions:
-                    temp.append(field)
-
-            self.ordering_fields = temp
-            self.search_fields = temp
-
-        super().__init__(**kwargs)
-
+class DynamicFilterAPIView(GenericAPIView):
     def get_queryset(self):
         type_casting = TYPE_CASTING
         reserved_params = RESERVED_PARAMS
@@ -77,3 +51,31 @@ class FancyAPIView(GenericAPIView):
                 params[param] = value
 
         return self.queryset.filter(**params).distinct()
+
+
+# noinspection PyProtectedMember
+class FancyAPIView(GenericAPIView):
+    filter_backends = [OrderingFilter, SearchFilter]
+
+    def __init__(self, **kwargs):
+        if hasattr(self.serializer_class, 'Meta') and hasattr(self.serializer_class.Meta, 'fields'):
+            temp = []
+            for field, field_type in self.serializer_class._declared_fields.items():
+                if field not in self.serializer_class.Meta.fields:
+                    continue
+
+                if field_type.write_only:
+                    continue
+
+                conditions = (
+                        isinstance(field_type, CharField)
+                        or isinstance(field_type, IntegerField)
+                        or isinstance(field_type, DateTimeField)
+                )
+                if conditions:
+                    temp.append(field)
+
+            self.ordering_fields = temp
+            self.search_fields = temp
+
+        super().__init__(**kwargs)

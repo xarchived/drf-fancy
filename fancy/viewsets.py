@@ -1,11 +1,11 @@
 from rest_framework.viewsets import ModelViewSet
 
 from fancy.decorators import credential_required, queryset_credential_handler
-from fancy.views import FancyAPIView, CredentialAPIView
+from fancy.views import FancyAPIView, CredentialAPIView, DynamicFilterAPIView
 from getter import get_model
 
 
-class FancyViewSet(ModelViewSet, FancyAPIView, CredentialAPIView):
+class FancyViewSet(ModelViewSet, FancyAPIView, CredentialAPIView, DynamicFilterAPIView):
     pass
 
 
