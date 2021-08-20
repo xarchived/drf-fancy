@@ -2,6 +2,7 @@ from ast import literal_eval
 
 from rest_framework.fields import CharField, IntegerField, DateTimeField
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.generics import GenericAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from fancy.decorators import credential_required, queryset_credential_handler
@@ -10,7 +11,7 @@ from getter import get_model
 
 
 # noinspection PyProtectedMember
-class FancyViewSet(ModelViewSet):
+class FancyAPIView(GenericAPIView):
     filter_backends = [OrderingFilter, SearchFilter]
 
     def __init__(self, **kwargs):
@@ -75,6 +76,11 @@ class FancyViewSet(ModelViewSet):
                 params[param] = value
 
         return self.queryset.filter(**params).distinct()
+
+
+# noinspection PyProtectedMember
+class FancyViewSet(ModelViewSet, FancyAPIView):
+    pass
 
 
 class FancySelfViewSet(FancyViewSet):
