@@ -3,8 +3,8 @@ from ast import literal_eval
 from rest_framework.fields import CharField, IntegerField, DateTimeField
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import GenericAPIView
-from rest_framework.views import APIView
 
+from fancy.decorators import queryset_credential_handler
 from fancy.settings import TYPE_CASTING, RESERVED_PARAMS
 
 
@@ -15,6 +15,15 @@ class CredentialAPIView(GenericAPIView):
         if hasattr(self.request._request, 'credential'):
             return self.request._request.credential
         return None
+
+
+class SelfAPIView(CredentialAPIView):
+    self_field: str
+    self_model: tuple
+
+    @queryset_credential_handler
+    def get_queryset(self):
+        return super().get_queryset().filter(**{self.self_field: self.credential['id']})
 
 
 class DynamicFilterAPIView(GenericAPIView):
