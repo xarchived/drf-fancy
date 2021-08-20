@@ -1,10 +1,10 @@
 from rest_framework.viewsets import ModelViewSet
 
 from fancy.mixins import SelfCreateModelMixin
-from fancy.views import FancyAPIView, CredentialAPIView, DynamicFilterAPIView, SelfAPIView
+from fancy.views import FancyAPIView, DynamicFilterAPIView, SelfAPIView
 
 
-class FancyViewSet(ModelViewSet, FancyAPIView, CredentialAPIView, DynamicFilterAPIView):
+class FancyViewSet(ModelViewSet, FancyAPIView, DynamicFilterAPIView):
     pass
 
 
