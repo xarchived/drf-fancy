@@ -62,13 +62,13 @@ class DynamicFilterAPIView(GenericAPIView):
         return self.queryset.filter(**params).distinct()
 
 
-# noinspection PyProtectedMember
 class SearchOrderingAPIView(GenericAPIView):
     filter_backends = [OrderingFilter, SearchFilter]
 
     def __init__(self, **kwargs):
         if hasattr(self.serializer_class, 'Meta') and hasattr(self.serializer_class.Meta, 'fields'):
             temp = []
+            # noinspection PyProtectedMember
             for field, field_type in self.serializer_class._declared_fields.items():
                 if field not in self.serializer_class.Meta.fields:
                     continue
