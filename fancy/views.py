@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from fancy.settings import TYPE_CASTING, RESERVED_PARAMS
 
 
-class CredentialAPIView(APIView):
+class CredentialAPIView(GenericAPIView):
     # noinspection PyProtectedMember
     @property
     def credential(self):
