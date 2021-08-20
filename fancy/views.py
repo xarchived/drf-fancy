@@ -3,8 +3,18 @@ from ast import literal_eval
 from rest_framework.fields import CharField, IntegerField, DateTimeField
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import GenericAPIView
+from rest_framework.views import APIView
 
 from fancy.settings import TYPE_CASTING, RESERVED_PARAMS
+
+
+class CredentialAPIView(APIView):
+    # noinspection PyProtectedMember
+    @property
+    def credential(self):
+        if hasattr(self.request._request, 'credential'):
+            return self.request._request.credential
+        return None
 
 
 # noinspection PyProtectedMember
@@ -33,12 +43,6 @@ class FancyAPIView(GenericAPIView):
             self.search_fields = temp
 
         super().__init__(**kwargs)
-
-    @property
-    def credential(self):
-        if hasattr(self.request._request, 'credential'):
-            return self.request._request.credential
-        return None
 
     def get_queryset(self):
         type_casting = TYPE_CASTING
