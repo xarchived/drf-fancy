@@ -63,7 +63,7 @@ class DynamicFilterAPIView(GenericAPIView):
 
 
 # noinspection PyProtectedMember
-class FancyAPIView(GenericAPIView):
+class SearchOrderingAPIView(GenericAPIView):
     filter_backends = [OrderingFilter, SearchFilter]
 
     def __init__(self, **kwargs):
