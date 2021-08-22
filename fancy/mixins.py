@@ -8,6 +8,9 @@ from getter import get_model
 class SelfCreateModelMixin(CreateModelMixin):
     @credential_required
     def create(self, request, *args, **kwargs):
+        if self.self_func(self.queryset, self.credential['id']):
+            raise NotImplemented('with "self_func" you have to override create method')
+
         if hasattr(self, 'self_field') and '__' not in self.self_field:
             request.data[self.self_field] = self.credential['id']
 

@@ -1,5 +1,6 @@
 from ast import literal_eval
 
+from django.db.models import QuerySet
 from rest_framework.fields import CharField, IntegerField, DateTimeField
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import GenericAPIView
@@ -21,8 +22,14 @@ class SelfAPIView(CredentialAPIView):
     self_field: str
     self_model: tuple
 
+    def self_func(self, queryset: QuerySet, credential_id: int) -> QuerySet:
+        pass
+
     @queryset_credential_handler
     def get_queryset(self):
+        if queryset := self.self_func(super().get_queryset(), self.credential['id']):
+            return queryset
+
         return super().get_queryset().filter(**{self.self_field: self.credential['id']})
 
 
