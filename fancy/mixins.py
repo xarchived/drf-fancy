@@ -1,3 +1,5 @@
+from inspect import getsourcelines
+
 from rest_framework.mixins import CreateModelMixin
 
 from fancy.decorators import credential_required
@@ -8,7 +10,8 @@ from getter import get_model
 class SelfCreateModelMixin(CreateModelMixin):
     @credential_required
     def create(self, request, *args, **kwargs):
-        if self.self_func(self.queryset, self.credential['id']):
+        source_lines = getsourcelines(self.self_func)
+        if 'pass' not in source_lines[0][1]:
             raise NotImplemented('with "self_func" you have to override create method')
 
         if hasattr(self, 'self_field') and '__' not in self.self_field:
