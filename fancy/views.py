@@ -27,7 +27,8 @@ class SelfAPIView(CredentialAPIView):
 
     @queryset_credential_handler
     def get_queryset(self):
-        if queryset := self.self_func(super().get_queryset(), self.credential.id):
+        queryset = self.self_func(super().get_queryset(), self.credential.id)
+        if queryset is not None:
             return queryset
 
         return super().get_queryset().filter(**{self.self_field: self.credential.id})
