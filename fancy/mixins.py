@@ -18,7 +18,7 @@ class SelfCreateModelMixin(CreateModelMixin):
 
         # Beware "self_field" when there is "__" in field name we should handle it with "self_model"
         if hasattr(self, 'self_field') and '__' not in self.self_field:
-            request.data[self.self_field] = self.credential['id']
+            request.data[self.self_field] = self.credential.id
 
         # Run DRF create method
         response = super().create(request, *args, **kwargs)
@@ -27,7 +27,7 @@ class SelfCreateModelMixin(CreateModelMixin):
         if hasattr(self, 'self_model'):
             model_name, left, right = self.self_model
             model_class = get_model(model_name)
-            args = {left: response.data['id'], right: self.credential['id']}
+            args = {left: response.data['id'], right: self.credential.id}
             instant = model_class(**args)
             instant.save()
 

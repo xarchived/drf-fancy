@@ -27,10 +27,10 @@ class SelfAPIView(CredentialAPIView):
 
     @queryset_credential_handler
     def get_queryset(self):
-        if queryset := self.self_func(super().get_queryset(), self.credential['id']):
+        if queryset := self.self_func(super().get_queryset(), self.credential.id):
             return queryset
 
-        return super().get_queryset().filter(**{self.self_field: self.credential['id']})
+        return super().get_queryset().filter(**{self.self_field: self.credential.id})
 
 
 class DynamicFilterAPIView(GenericAPIView):
