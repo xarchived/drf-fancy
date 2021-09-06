@@ -8,7 +8,7 @@ from fancy.fields import LoginRequiredSerializerField, SelfSerializerField
 class HttpAndHttpsSchemaGenerator(OpenAPISchemaGenerator):
     def get_schema(self, request=None, public=False):
         schema = super().get_schema(request, public)
-        schema.schemes = ['http', 'https']
+        schema.schemes = ['https', 'http']
         return schema
 
 
