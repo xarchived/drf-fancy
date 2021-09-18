@@ -38,6 +38,8 @@ class DynamicFilterAPIView(GenericAPIView):
     def get_queryset(self):
         type_casting = TYPE_CASTING
         reserved_params = RESERVED_PARAMS
+        ordering = self.request.query_params.get('ordering')
+        distinct = ['id']
 
         params = {}
         for param in self.request.query_params:
@@ -67,7 +69,10 @@ class DynamicFilterAPIView(GenericAPIView):
             else:  # We trust Django and do not check for correct values
                 params[param] = value
 
-        return self.queryset.filter(**params).distinct()
+        if ordering:
+            distinct += ordering.split(',')
+
+        return self.queryset.filter(**params).distinct(*distinct)
 
 
 class SearchOrderingAPIView(GenericAPIView):
