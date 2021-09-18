@@ -67,7 +67,7 @@ class DynamicFilterAPIView(GenericAPIView):
             else:  # We trust Django and do not check for correct values
                 params[param] = value
 
-        return self.queryset.filter(**params).distinct('pk')
+        return self.queryset.filter(**params).distinct()
 
 
 class SearchOrderingAPIView(GenericAPIView):
