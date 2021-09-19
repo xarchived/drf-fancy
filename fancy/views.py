@@ -70,7 +70,7 @@ class DynamicFilterAPIView(GenericAPIView):
                 params[param] = value
 
         if ordering:
-            distinct += ordering.split(',')
+            distinct += ordering.replace('-', '').split(',')
 
         return self.queryset.filter(**params).distinct(*distinct)
 
